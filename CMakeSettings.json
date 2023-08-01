@@ -1,0 +1,22 @@
+﻿{
+    "configurations": [
+        {
+            "name": "x86-Debug",
+            "generator": "Ninja",
+            "configurationType": "Debug",
+            "inheritEnvironments": [ "msvc_x86" ],
+            "buildRoot": "${projectDir}\\out\\build\\${name}",
+            "installRoot": "${projectDir}\\out\\install\\${name}",
+            "cmakeCommandArgs": "",
+            "buildCommandArgs": "",
+            "ctestCommandArgs": "",
+            "variables": [
+                {
+                    "name": "CMAKE_INSTALL_PREFIX",
+                    "value": "C:/data/src/RTCW-SP/out/install/x86-Debug",
+                    "type": "PATH"
+                }
+            ]
+        }
+    ]
+}

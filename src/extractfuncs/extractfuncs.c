@@ -147,18 +147,30 @@ extern int Q_stricmp( const char *s1, const char *s2 );
 
 // the function names
 //#define DEFAULT_FUNCBASE "g_func"
-static char *func_filename = "g_funcs.h";
-static char *func_filedesc = "g_func_decs.h";
+static char *func_name_filename = "g_funcs.h";
+static char *func_desc_filename = "g_func_decs.h";
 
-void DumpReplaceFunctions( void ) {
+void DumpReplaceFunctions(const char* outputDirectory) {
 	replacefunc_t *rf;
 	char path[_MAX_PATH];
 	FILE    *f;
 	int len, newlen;
-	unsigned char *buf, *newbuf;
+	unsigned char *buf = NULL, *newbuf = NULL;
 	int updated;
 
 	updated = 0;
+
+	char func_filename[_MAX_PATH] = "";
+	char func_filedesc[_MAX_PATH] = "";
+
+	if (outputDirectory) {
+		strcpy(func_filename, outputDirectory);
+		strcat(func_filename, PATHSEPERATOR_STR);
+		strcpy(func_filedesc, outputDirectory);
+		strcat(func_filedesc, PATHSEPERATOR_STR);
+	}
+	strcat(func_filename, func_name_filename);
+	strcat(func_filedesc, func_desc_filename);
 
 	// dump the function header
 	strcpy( path, "." );
@@ -220,7 +232,9 @@ void DumpReplaceFunctions( void ) {
 	}
 
 	free( buf );
+	buf = NULL;
 	free( newbuf );
+	newbuf = NULL;
 
 	// dump the function declarations
 	strcpy( path, "g_func_decs.tmp" );
@@ -597,8 +611,13 @@ void main( int argc, char *argv[] ) {
 	int done; //, i;
 
 	if ( argc < 2 ) {
-		Error( "USAGE: screwup <file filter>\n" );
+		Error( "USAGE: screwup <file filter> [<output directory>]\n" );
 	} //end if
+
+	const char* outputDirectory = NULL;
+	if (argc >= 3) {
+		outputDirectory = argv[2];
+	}
 
 	handle = FindFirstFile( argv[1], &filedata );
 	done = ( handle == INVALID_HANDLE_VALUE );
@@ -611,7 +630,7 @@ void main( int argc, char *argv[] ) {
 		  //find the next file
 		done = !FindNextFile( handle, &filedata );
 	} //end while
-	DumpReplaceFunctions();
+	DumpReplaceFunctions(outputDirectory);
 } //end of the function main
 
 #else
@@ -647,7 +666,7 @@ int main( int argc, char *argv[] ) {
 		printf( "%d: %s\n", i, argv[i] );
 		GetFunctionNamesFromFile( argv[i] );
 	}
-	DumpReplaceFunctions();
+	DumpReplaceFunctions(NULL);
 }
 
 #endif

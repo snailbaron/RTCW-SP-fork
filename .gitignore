@@ -1,4 +1,3 @@
 *.exe
 /.vs/
-/CMakeSettings.json
 /out/

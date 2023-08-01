@@ -1,5 +1,4 @@
-add_library(game SHARED
-    game.def
+set(GAME_MODULE_C_FILES
     ai_cast.c
     ai_cast_characters.c
     ai_cast_debug.c
@@ -45,6 +44,28 @@ add_library(game SHARED
     g_weapon.c
     q_math.c
     q_shared.c
+)
+
+add_custom_command(
+    COMMENT "generating g_funcs.h and g_func_decs.h"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    COMMAND
+        "$<TARGET_FILE:extractfuncs>"
+        *.c
+        "${CMAKE_CURRENT_BINARY_DIR}/include"
+    DEPENDS
+        extractfuncs
+        ${GAME_MODULE_C_FILES}
+    OUTPUT
+        "${CMAKE_CURRENT_BINARY_DIR}/include/g_funcs.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/include/g_func_decs.h"
+)
+
+add_library(game SHARED
+    "${CMAKE_CURRENT_BINARY_DIR}/include/g_funcs.h"
+    "${CMAKE_CURRENT_BINARY_DIR}/include/g_func_decs.h"
+    game.def
+    ${GAME_MODULE_C_FILES}
     ../botai/ai_chat.c
     ../botai/ai_cmd.c
     ../botai/ai_dmnet.c
@@ -52,6 +73,7 @@ add_library(game SHARED
     ../botai/ai_main.c
     ../botai/ai_team.c
 )
+target_include_directories(game PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/include")
 target_compile_definitions(game PRIVATE GAMEDLL)
 target_link_libraries(game PRIVATE winmm)
 set_target_properties(game PROPERTIES OUTPUT_NAME qagamex86)
